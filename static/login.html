@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ORAKX-CORE // AUTHENTICATION REQUIRED</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+  body {
+    margin: 0; background: #020305; color: #ff2a6d;
+    font-family: 'JetBrains Mono', monospace; display: flex;
+    justify-content: center; align-items: center; height: 100vh;
+    background-image: radial-gradient(circle at center, #10030a 0%, #020305 100%);
+  }
+  .login-box {
+    background: #07090f; border: 1px solid #ff2a6d; padding: 30px; border-radius: 6px;
+    width: 360px; box-shadow: 0 0 30px rgba(255,42,109,0.2); text-align: center;
+  }
+  h2 { font-size: 16px; letter-spacing: 0.2em; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,42,109,0.5); }
+  input {
+    width: 100%; background: #030408; border: 1px solid #1a233a; color: #fff;
+    padding: 12px; margin-bottom: 15px; border-radius: 4px; font: inherit; box-sizing: border-box;
+  }
+  input:focus { border-color: #ff2a6d; outline: none; box-shadow: 0 0 8px rgba(255,42,109,0.3); }
+  button {
+    width: 100%; background: #ff2a6d; color: #020305; border: 0; padding: 12px;
+    font: inherit; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em;
+    border-radius: 4px; transition: 0.2s;
+  }
+  button:hover { background: #ff4886; box-shadow: 0 0 15px rgba(255,42,109,0.5); }
+  .tag { font-size: 10px; color: #556080; margin-top: 15px; display: block; }
+</style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>[ ORAKX SECURE GATE ]</h2>
+    <form method="GET" action="/">
+      <input type="text" placeholder="OPERATOR ID (admin)" value="admin" readonly>
+      <input type="password" placeholder="ENTER ACCESS PASSWORD" required onclick="this.value='mypass123'">
+      <button type="submit">Unlock Matrix</button>
+    </form>
+    <span class="tag"># Tool made by ORAKXAI T3AM</span>
+  </div>
+</body>
+</html>

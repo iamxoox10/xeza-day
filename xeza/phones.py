@@ -1,50 +1,37 @@
-import os
-import re
-
-import httpx
 import phonenumbers
-from phonenumbers import carrier, geocoder
-from phonenumbers import timezone as pntz
+from phonenumbers import carrier, geocoder, timezone
 
-UA = {"User-Agent": "Mozilla/5.0 XeZaDay/0.2"}
-
-
-def profile(raw: str, region: str | None = None) -> dict:
-    region = region or os.getenv("DEFAULT_REGION", "US")
+async def profile_phone(phone: str):
+    results = []
     try:
-        num = phonenumbers.parse(raw, region)
-    except Exception:
-        return {"valid": False, "raw": raw}
-    if not phonenumbers.is_valid_number(num):
-        return {"valid": False, "raw": raw}
-    return {
-        "valid": True,
-        "e164": phonenumbers.format_number(num, phonenumbers.PhoneNumberFormat.E164),
-        "national": phonenumbers.format_number(num, phonenumbers.PhoneNumberFormat.NATIONAL),
-        "region": geocoder.description_for_number(num, "en"),
-        "carrier": carrier.name_for_number(num, "en"),
-        "line": str(phonenumbers.number_type(num)),
-        "tz": pntz.time_zones_for_number(num),
-    }
-
-
-async def telegram(e164: str) -> dict | None:
-    async with httpx.AsyncClient(headers=UA, follow_redirects=True) as c:
-        try:
-            r = await c.get(f"https://t.me/{e164}", timeout=12)
-            if "tgme_page_title" in r.text:
-                m = re.search(r"tgme_page_title[^>]*>([^<]{1,80})<", r.text)
-                return {"kind": "telegram", "value": (m.group(1).strip() if m else e164),
-                        "url": f"https://t.me/{e164}", "method": "api", "weight": 2.5}
-        except Exception:
-            pass
-    return None
-
-
-def links(e164: str) -> list[dict]:
-    bare = e164.lstrip("+")
-    return [
-        {"kind": "link", "value": "WhatsApp", "url": f"https://wa.me/{bare}", "method": "js", "weight": 0.7},
-        {"kind": "link", "value": "Viber", "url": f"viber://chat?number={e164}", "method": "js", "weight": 0.4},
-        {"kind": "link", "value": "Signal", "url": f"https://signal.me/#p/{e164}", "method": "js", "weight": 0.4},
-    ]
+        parsed = phonenumbers.parse(phone)
+        if not phonenumbers.is_valid_number(parsed):
+            return [{"kind": "Error", "value": "Invalid phone number format", "score": 0, "method": "Parser"}]
+        
+        country = geocoder.description_for_number(parsed, "en")
+        isp = carrier.name_for_number(parsed, "en")
+        tz = ", ".join(timezone.time_zones_for_number(parsed))
+        num_type = phonenumbers.number_type(parsed)
+        
+        results.append({"kind": "Phone Geo", "value": f"Country/Region: {country or 'Unknown'}", "score": 3, "method": "GeoLocator"})
+        results.append({"kind": "Carrier Info", "value": f"Telecom Carrier: {isp or 'Unknown / VoIP'}", "score": 4, "method": "HLR Lookup"})
+        results.append({"kind": "Timezone", "value": f"Associated Timezones: {tz}", "score": 2, "method": "TZ Analysis"})
+        
+        clean_num = phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164).replace("+", "")
+        results.append({
+            "kind": "WhatsApp Direct",
+            "value": f"Open WhatsApp chat for +{clean_num}",
+            "score": 6,
+            "method": "API Vector",
+            "url": f"https://wa.me/{clean_num}"
+        })
+        results.append({
+            "kind": "Telegram Direct",
+            "value": f"Open Telegram link for +{clean_num}",
+            "score": 6,
+            "method": "API Vector",
+            "url": f"https://t.me/+{clean_num}"
+        })
+    except Exception as e:
+        results.append({"kind": "Error", "value": f"Phone parse failure: {str(e)}", "score": 0, "method": "Exception"})
+    return results

@@ -6,65 +6,66 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
   :root {
-    --bg: #030508;
-    --panel: #070a14;
-    --border: #131d35;
-    --accent: #00f3ff;
+    --bg: #020305;
+    --panel: #06080f;
+    --border: #1a0815;
+    --accent: #ff2a6d;
     --matrix: #00ff66;
     --warn: #f39c12;
-    --hot: #ff2a6d;
-    --text: #c8d0e0;
+    --hot: #ff0055;
+    --text: #d0d8e8;
     --dim: #556080;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
     font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 20px;
-    background-image: linear-gradient(rgba(0,243,255,0.015) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(0,243,255,0.015) 1px, transparent 1px);
+    background-image: linear-gradient(rgba(255,42,109,0.015) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,42,109,0.015) 1px, transparent 1px);
     background-size: 20px 20px;
   }
   header {
     display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 18px;
+    border-bottom: 1px solid var(--accent); padding-bottom: 12px; margin-bottom: 18px;
+    box-shadow: 0 5px 20px rgba(255,42,109,0.1);
   }
-  h1 { color: var(--accent); font-size: 18px; letter-spacing: 0.18em; margin: 0; text-shadow: 0 0 10px rgba(0,243,255,0.3); }
+  h1 { color: var(--accent); font-size: 18px; letter-spacing: 0.18em; margin: 0; text-shadow: 0 0 12px rgba(255,42,109,0.4); }
   .tag { color: var(--matrix); font-size: 11px; border: 1px solid var(--matrix); padding: 3px 8px; border-radius: 2px; background: rgba(0,255,102,0.05); }
   
   .control-panel {
-    background: var(--panel); border: 1px solid var(--border); padding: 14px; border-radius: 6px;
-    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    background: var(--panel); border: 1px solid var(--accent); padding: 14px; border-radius: 6px;
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; box-shadow: 0 4px 25px rgba(255,42,109,0.15);
   }
   select, input, button {
-    background: #0b1120; color: var(--text); border: 1px solid var(--border);
+    background: #04050a; color: var(--text); border: 1px solid var(--border);
     padding: 10px 14px; font: inherit; border-radius: 4px; outline: none; transition: all 0.2s;
   }
-  select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(0,243,255,0.2); }
+  select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(255,42,109,0.3); }
   input { flex: 1; min-width: 260px; }
   button {
-    background: var(--accent); color: #030508; font-weight: 800; cursor: pointer; border: 0;
+    background: var(--accent); color: #020305; font-weight: 800; cursor: pointer; border: 0;
     letter-spacing: 0.05em; text-transform: uppercase;
   }
-  button:hover { background: #00c4d1; box-shadow: 0 0 12px rgba(0,243,255,0.4); }
+  button:hover { background: #ff4886; box-shadow: 0 0 15px rgba(255,42,109,0.6); }
   button:disabled { opacity: 0.4; cursor: not-allowed; }
 
   #workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
   .pane { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
-  .pane-header { background: #0b1120; padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; display: flex; justify-content: space-between; }
+  .pane-header { background: #04050a; padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; display: flex; justify-content: space-between; }
   
-  #log { padding: 12px; height: 460px; overflow-y: auto; font-size: 12px; line-height: 1.5; }
+  #log { padding: 12px; height: 440px; overflow-y: auto; font-size: 12px; line-height: 1.5; }
   #log div { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: var(--dim); }
   #log div.hit { color: var(--matrix); text-shadow: 0 0 5px rgba(0,255,102,0.2); }
   #log div.alert { color: var(--hot); }
   #log div.info { color: var(--accent); }
 
-  #graph { height: 460px; background: #050810; }
+  #graph { height: 440px; background: #020306; }
 
   .matrix-table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
   th, td { border-bottom: 1px solid var(--border); padding: 10px 14px; text-align: left; font-size: 12px; }
-  th { color: var(--dim); font-weight: 400; background: #0b1120; letter-spacing: 0.05em; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; text-shadow: 0 0 5px rgba(0,243,255,0.4); }
+  th { color: var(--dim); font-weight: 400; background: #04050a; letter-spacing: 0.05em; }
+  a { color: var(--accent); text-decoration: none; font-weight: bold; }
+  a:hover { text-decoration: underline; text-shadow: 0 0 8px rgba(255,42,109,0.6); }
   
   .score-hot { color: var(--hot); font-weight: 700; }
   .score-warn { color: var(--warn); font-weight: 700; }
@@ -84,22 +85,20 @@
   <select id="kind">
     <option value="username">VECTOR: USERNAME</option>
     <option value="email">VECTOR: EMAIL</option>
-    <option value="phone">VECTOR: PHONE</option>
-    <option value="image">VECTOR: IMAGE URL</option>
-    <option value="domain">VECTOR: DOMAIN/IP</option>
-    <option value="crypto">VECTOR: CRYPTO WALLET</option>
+    <option value="phone">VECTOR: PHONE (+1..., +974...)</option>
+    <option value="domain">VECTOR: DOMAIN / IP</option>
+    <option value="crypto">VECTOR: CRYPTO WALLET (0x..., bc1...)</option>
   </select>
-  <input id="q" placeholder="Enter target identifier (e.g. target_handle, 0x..., +1...)" required>
+  <input id="q" placeholder="Enter target(s) separated by commas (e.g. target1, target2, target3)" required>
   <select id="depth">
     <option value="2">RECON DEPTH: 2 (DEEP)</option>
     <option value="1">RECON DEPTH: 1 (FAST)</option>
-    <option value="0">RECON DEPTH: 0 (SURFACE)</option>
   </select>
-  <button id="go">Initialize Scan</button>
+  <button id="go">Initialize Batch Scan</button>
 </form>
 
 <div id="status-bar">
-  <div>SYSTEM STATUS: <span id="sys-state" style="color:var(--matrix)">STANDBY</span></div>
+  <div>SYSTEM STATUS: <span id="sys-state" style="color:var(--matrix)">STANDBY // READY</span></div>
   <div id="verdict-box">VERDICT: PENDING TARGET</div>
 </div>
 
@@ -116,7 +115,7 @@
 
 <table class="matrix-table">
   <thead>
-    <tr><th>Vector Type</th><th>Discovered Intelligence Value</th><th>Protocol / Method</th><th>Threat / Weight Score</th><th>Direct Access Link</th></tr>
+    <tr><th>Vector Type</th><th>Discovered Intelligence Value</th><th>Protocol / Method</th><th>Threat / Weight Score</th><th>Direct Clickable Link</th></tr>
   </thead>
   <tbody id="rows"></tbody>
 </table>
@@ -129,15 +128,14 @@ let net = null, nodes = null, edges = null, logCount = 0;
 
 function boot(q) {
   document.getElementById('graph').innerHTML = '';
-  nodes = new vis.DataSet([{id: 'root', label: 'TARGET: ' + q, color: '#00f3ff', font: {color: '#030508', face: 'JetBrains Mono', bold: true}}]);
+  nodes = new vis.DataSet([{id: 'root', label: 'TARGET BATCH: ' + q, color: '#ff2a6d', font: {color: '#020305', face: 'JetBrains Mono', bold: true}}]);
   edges = new vis.DataSet([]);
   net = new vis.Network(document.getElementById('graph'), {nodes, edges}, {
-    nodes: { shape: 'dot', size: 10, color: '#131d35', font: {color: '#c8d0e0', face: 'JetBrains Mono', size: 11}, borderWidth: 2, borderDrawn: true },
-    edges: { color: {color: '#131d35', highlight: '#00f3ff'}, smooth: {type: 'cubicBezier'} },
-    physics: { stabilization: true, barnesHut: { springLength: 150, gravitationalConstant: -2000 } },
-    interaction: { hover: true }
+    nodes: { shape: 'dot', size: 10, color: '#1a0815', font: {color: '#d0d8e8', face: 'JetBrains Mono', size: 11}, borderWidth: 2 },
+    edges: { color: {color: '#1a0815', highlight: '#ff2a6d'}, smooth: {type: 'cubicBezier'} },
+    physics: { stabilization: true, barnesHut: { springLength: 150, gravitationalConstant: -2000 } }
   });
-  rows.innerHTML = ''; verdictBox.textContent = 'VERDICT: SCANNING IN PROGRESS...'; log.innerHTML = '';
+  rows.innerHTML = ''; verdictBox.textContent = 'VERDICT: BATCH RECON IN PROGRESS...'; log.innerHTML = '';
   sysState.textContent = 'ACTIVE // SCANNING'; sysState.style.color = 'var(--accent)';
   logCount = 0; document.getElementById('log-count').textContent = '0 events';
 }
@@ -148,23 +146,27 @@ f.addEventListener('submit', async e => {
   boot(q);
   
   try {
-    const r = await fetch(`/api/trace?kind=${kind}&q=${encodeURIComponent(q)}&depth=${document.getElementById('depth').value}`, {method: 'POST'});
+    const r = await fetch(`/api/trace/json`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({kind, q, depth: document.getElementById('depth').value})
+    });
     const {job} = await r.json();
     const es = new EventSource(`/api/stream/${job}`);
     
     es.addEventListener('log', ev => {
       const d = document.createElement('div');
       d.textContent = '> ' + ev.data;
-      if (ev.data.startsWith('+') || ev.data.includes('hit')) d.className = 'hit';
-      else if (ev.data.includes('error') || ev.data.includes('alert')) d.className = 'alert';
-      else if (ev.data.includes('profiling') || ev.data.includes('enumerating')) d.className = 'info';
+      if (ev.data.includes('+]') || ev.data.includes('hit')) d.className = 'hit';
+      else if (ev.data.includes('error') || ev.data.includes('failure')) d.className = 'alert';
+      else d.className = 'info';
       log.appendChild(d); log.scrollTop = log.scrollHeight;
       logCount++; document.getElementById('log-count').textContent = logCount + ' events';
     });
     
     es.addEventListener('edge', ev => {
-      const e = JSON.parse(ev.data), id = job + e.value + Math.random();
-      nodes.add({ id, label: String(e.value).slice(0, 30), color: e.score >= 5 ? '#ff2a6d' : e.score >= 3 ? '#f39c12' : '#00ff66' });
+      const e = JSON.parse(ev.data), id = job + Math.random();
+      nodes.add({ id, label: String(e.value).slice(0, 30), color: e.score >= 5 ? '#ff0055' : e.score >= 3 ? '#f39c12' : '#00ff66' });
       edges.add({ from: 'root', to: id, label: e.kind });
       
       const tr = document.createElement('tr');
@@ -175,7 +177,7 @@ f.addEventListener('submit', async e => {
     
     es.addEventListener('done', ev => {
       const d = JSON.parse(ev.data);
-      verdictBox.innerHTML = `VERDICT: <span style="color:var(--accent)">${(d.verdict || 'UNKNOWN').toUpperCase()}</span> · TOTAL INTEL NODES: ${d.edges.length}`;
+      verdictBox.innerHTML = `VERDICT: <span style="color:var(--matrix)">${(d.verdict || 'UNKNOWN').toUpperCase()}</span> · TOTAL INTEL NODES: ${d.edges.length}`;
       sysState.textContent = 'COMPLETED'; sysState.style.color = 'var(--matrix)';
       es.close(); go.disabled = false;
     });

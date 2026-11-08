@@ -1,92 +1,88 @@
-import asyncio
-import base64
-import json
 import os
-import secrets
-import sys
-import warnings
+import uuid
+import asyncio
 from pathlib import Path
-
-from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, Response
+from fastapi import FastAPI, Depends, Request, BackgroundTasks, Query
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sse_starlette.sse import EventSourceResponse
+from .auth import verify_credentials
+from .engine import run_scan_job
 
-from . import engine
+app = FastAPI(title="ORAKX-CORE OSINT SUITE", version="4.0.0")
 
-load_dotenv()
-warnings.filterwarnings("ignore")
+BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = BASE_DIR / "static"
+STATIC_DIR.mkdir(exist_ok=True)
 
-XEZA_USER = os.getenv("XEZA_USER", "admin")
-XEZA_PASS = os.getenv("XEZA_PASS", "")
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
+jobs_store = {}
 
-def res(*parts) -> Path:
-    base = getattr(sys, "_MEIPASS", None)
-    if base:
-        return Path(base).joinpath(*parts)
-    return Path(__file__).parent.parent.joinpath(*parts)
-
-
-app = FastAPI(title="XeZa Day")
-app.mount("/static", StaticFiles(directory=res("static")), name="s")
-
-
-@app.middleware("http")
-async def gate(request: Request, call_next):
-    if not XEZA_PASS or request.url.path.startswith("/static"):
-        return await call_next(request)
-    hdr = request.headers.get("authorization", "")
-    if hdr.startswith("Basic "):
-        try:
-            user, pw = base64.b64decode(hdr[6:]).decode().split(":", 1)
-            if user == XEZA_USER and secrets.compare_digest(pw, XEZA_PASS):
-                return await call_next(request)
-        except Exception:
-            pass
-    return Response(status_code=401, headers={"WWW-Authenticate": 'Basic realm="xeza"'})
-
-
-@app.get("/")
-async def index():
-    return FileResponse(res("static", "index.html"))
-
+@app.get("/", response_class=HTMLResponse)
+def index(username: str = Depends(verify_credentials)):
+    index_file = STATIC_DIR / "index.html"
+    if index_file.exists():
+        return index_file.read_text(encoding="utf-8")
+    return "<h3>Error: static/index.html missing.</h3>"
 
 @app.post("/api/trace")
-async def trace(kind: str, q: str, depth: int = 2, region: str | None = None):
-    if kind not in ("username", "email", "phone", "image"):
-        raise HTTPException(400, "bad kind")
-    jid = engine.new_job(kind, q)
-    asyncio.create_task(engine.run(jid, depth, region))
-    return {"job": jid}
+async def start_trace(kind: str = Form(...), q: str = Form(...), depth: int = Form(2), username: str = Depends(verify_credentials)):
+    job_id = str(uuid.uuid4())[:8]
+    jobs_store[job_id] = {"kind": kind, "query": q, "depth": depth, "status": "running", "logs": [], "edges": []}
+    return {"job": job_id}
 
+# Also support JSON / Query params for trace if needed
+@app.post("/api/trace/json")
+async def start_trace_json(payload: dict, username: str = Depends(verify_credentials)):
+    job_id = str(uuid.uuid4())[:8]
+    kind = payload.get("kind", "username")
+    q = payload.get("q", "")
+    depth = int(payload.get("depth", 2))
+    jobs_store[job_id] = {"kind": kind, "query": q, "depth": depth, "status": "running", "logs": [], "edges": []}
+    return {"job": job_id}
 
-@app.get("/api/stream/{jid}")
-async def stream(jid: str):
-    if jid not in engine.JOBS:
-        raise HTTPException(404)
+@app.get("/api/stream/{job_id}")
+async def stream_job(job_id: str, request: Request, username: str = Depends(verify_credentials)):
+    job = jobs_store.get(job_id)
+    if not job:
+        return JSONResponse({"error": "Job not found"}, status_code=404)
 
-    async def gen():
-        sent_log = sent_edges = 0
-        job = engine.JOBS[jid]
-        while True:
-            while sent_log < len(job["log"]):
-                yield {"event": "log", "data": job["log"][sent_log]}
-                sent_log += 1
-            while sent_edges < len(job["edges"]):
-                yield {"event": "edge", "data": json.dumps(job["edges"][sent_edges])}
-                sent_edges += 1
-            if job["status"] == "done" and sent_log >= len(job["log"]) and sent_edges >= len(job["edges"]):
-                yield {"event": "done", "data": json.dumps(engine.public(jid))}
-                break
-            await asyncio.sleep(0.25)
+    async def event_generator():
+        q_queue = asyncio.Queue()
 
-    return EventSourceResponse(gen())
+        async def log_cb(msg):
+            await q_queue.put(("log", msg))
 
+        async def edge_cb(edge):
+            await q_queue.put(("edge", edge))
 
-@app.get("/api/job/{jid}")
-async def job(jid: str):
-    if jid not in engine.JOBS:
-        raise HTTPException(404)
-    return engine.public(jid)
+        async def background_runner():
+            res = await run_scan_job(job["kind"], job["query"], job["depth"], log_cb, edge_cb)
+            await q_queue.put(("done", res))
+
+        task = asyncio.create_task(background_runner())
+
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+                try:
+                    ev_type, data = await asyncio.wait_for(q_queue.get(), timeout=0.5)
+                    if ev_type == "log":
+                        yield {"event": "log", "data": data}
+                    elif ev_type == "edge":
+                        import json
+                        yield {"event": "edge", "data": json.dumps(data)}
+                    elif ev_type == "done":
+                        import json
+                        yield {"event": "done", "data": json.dumps(data)}
+                        break
+                except asyncio.TimeoutError:
+                    yield {"event": "ping", "data": "alive"}
+        except Exception:
+            pass
+        finally:
+            task.cancel()
+
+    return EventSourceResponse(event_generator())
