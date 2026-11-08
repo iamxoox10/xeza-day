@@ -1,0 +1,93 @@
+<!doctype html><meta charset="utf-8"><title>XeZa Day</title>
+<style>
+:root{--bg:#080b14;--fg:#e6e9ef;--dim:#7b8399;--acc:#8be9a8;--warn:#ffd166;--hot:#ff6b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px ui-monospace,SFMono-Regular,monospace;padding:24px}
+h1{color:var(--acc);font-size:18px;letter-spacing:.14em;margin:0 0 4px}
+.sub{color:var(--dim);margin-bottom:18px}
+form{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+select,input,button{background:#101626;color:var(--fg);border:1px solid #232b42;padding:9px 11px;font:inherit;border-radius:4px}
+button{background:var(--acc);color:#06130b;font-weight:700;cursor:pointer;border:0}
+button:disabled{opacity:.45;cursor:default}
+#wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#log{background:#0c1120;border:1px solid #1b2338;padding:12px;height:52vh;overflow:auto;border-radius:4px;font-size:12px}
+#log div{padding:2px 0;border-bottom:1px solid #141b2c;color:var(--dim)}
+#log div.hit{color:var(--acc)}
+#graph{background:#0c1120;border:1px solid #1b2338;height:52vh;border-radius:4px}
+#verdict{margin:12px 0;font-size:15px}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+td,th{border-bottom:1px solid #1b2338;padding:6px;text-align:left;font-size:12px}
+th{color:var(--dim);font-weight:400}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline}
+.s3{color:var(--hot)}.s2{color:var(--warn)}.s1{color:var(--dim)}
+</style>
+<h1>XeZa Day</h1>
+<div class="sub">one identifier in — the public trail out</div>
+
+<form id="f">
+  <select id="kind">
+    <option value="username">username</option>
+    <option value="email">email</option>
+    <option value="phone">phone</option>
+    <option value="image">image url</option>
+  </select>
+  <input id="q" placeholder="value" size="34" required>
+  <select id="depth">
+    <option value="2">depth 2</option>
+    <option value="1">depth 1</option>
+    <option value="0">no pivot</option>
+  </select>
+  <button id="go">trace</option>
+</form>
+
+<div id="verdict"></div>
+<div id="wrap"><div id="log"></div><div id="graph"></div></div>
+<table><thead><tr><th>kind</th><th>value</th><th>method</th><th>score</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script>
+const f=document.getElementById('f'),go=document.getElementById('go'),log=document.getElementById('log');
+const rows=document.getElementById('rows'),verdict=document.getElementById('verdict');
+let net=null,nodes=null,edges=null;
+
+function boot(q){
+  document.getElementById('graph').innerHTML='';
+  nodes=new vis.DataSet([{id:'root',label:q,color:'#8be9a8',font:{color:'#06130b'}}]);
+  edges=new vis.DataSet([]);
+  net=new vis.Network(document.getElementById('graph'),{nodes,edges},{
+    nodes:{shape:'dot',size:9,color:'#4b5b7c',font:{color:'#c8d0e0',size:11}},
+    edges:{color:'#2a3550',smooth:false},
+    physics:{stabilization:true,barnesHut:{springLength:130}},
+    interaction:{hover:true}});
+  rows.innerHTML='';verdict.textContent='';log.innerHTML='';
+}
+
+f.addEventListener('submit',async e=>{
+  e.preventDefault();go.disabled=true;
+  const kind=document.getElementById('kind').value,q=document.getElementById('q').value.trim();
+  boot(q);
+  const r=await fetch(`/api/trace?kind=${kind}&q=${encodeURIComponent(q)}&depth=${document.getElementById('depth').value}`,{method:'POST'});
+  const {job}=await r.json();
+  const es=new EventSource(`/api/stream/${job}`);
+  es.addEventListener('log',ev=>{
+    const d=document.createElement('div');
+    d.textContent=ev.data; if(ev.data.startsWith('+')||ev.data.includes('hit'))d.className='hit';
+    log.appendChild(d);log.scrollTop=log.scrollHeight;
+  });
+  es.addEventListener('edge',ev=>{
+    const e=JSON.parse(ev.data),id=job+e.value;
+    nodes.add({id,label:String(e.value).slice(0,26),color:e.score>=5?'#ff6b6b':e.score>=3?'#ffd166':'#4b5b7c'});
+    edges.add({from:'root',to:id,label:e.kind});
+    const tr=document.createElement('tr');
+    const cls=e.score>=5?'s3':e.score>=3?'s2':'s1';
+    tr.innerHTML=`<td>${e.kind}</td><td>${e.url?`<a href="${e.url}" target="_blank" rel="noopener">${e.value}</a>`:e.value}</td><td>${e.method}</td><td class="${cls}">${e.score}</td><td></td>`;
+    rows.appendChild(tr);
+  });
+  es.addEventListener('done',ev=>{
+    const d=JSON.parse(ev.data);
+    verdict.textContent=`verdict: ${d.verdict||'?'} · ${d.edges.length} pivots`;
+    es.close();go.disabled=false;
+  });
+});
+</script>

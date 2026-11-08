@@ -1,0 +1,44 @@
+- {name: GitHub, url: "https://api.github.com/users/{u}", control: "https://api.github.com/users/zzq9x7k2m4", api: true, weight: 3}
+- {name: Bluesky, url: "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor={u}.bsky.social", control: "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=zzq9x7k2m4.bsky.social", api: true, weight: 3}
+- {name: GitLab, url: "https://gitlab.com/{u}", control: "https://gitlab.com/zzq9x7k2m4", weight: 2}
+- {name: Reddit, url: "https://www.reddit.com/user/{u}/about.json", control: "https://www.reddit.com/user/zzq9x7k2m4/about.json", api: true, weight: 2}
+- {name: Keybase, url: "https://keybase.io/_/api/1.0/user/lookup.json?username={u}", control: "https://keybase.io/_/api/1.0/user/lookup.json?username=zzq9x7k2m4", api: true, weight: 3}
+- {name: HackerNews, url: "https://hacker-news.firebaseio.com/v0/user/{u}.json", control: "https://hacker-news.firebaseio.com/v0/user/zzq9x7k2m4.json", api: true, weight: 2}
+- {name: npm, url: "https://www.npmjs.com/~{u}", control: "https://www.npmjs.com/~zzq9x7k2m4", weight: 2}
+- {name: PyPI, url: "https://pypi.org/user/{u}/", control: "https://pypi.org/user/zzq9x7k2m4/", weight: 2}
+- {name: DockerHub, url: "https://hub.docker.com/v2/users/{u}/", control: "https://hub.docker.com/v2/users/zzq9x7k2m4/", api: true, weight: 2}
+- {name: DevTo, url: "https://dev.to/{u}", control: "https://dev.to/zzq9x7k2m4", weight: 2}
+- {name: Codeberg, url: "https://codeberg.org/{u}", control: "https://codeberg.org/zzq9x7k2m4", weight: 2}
+- {name: Bitbucket, url: "https://bitbucket.org/{u}/", control: "https://bitbucket.org/zzq9x7k2m4/", weight: 2}
+- {name: Kaggle, url: "https://www.kaggle.com/{u}", control: "https://www.kaggle.com/zzq9x7k2m4", weight: 2}
+- {name: HuggingFace, url: "https://huggingface.co/{u}", control: "https://huggingface.co/zzq9x7k2m4", weight: 2}
+- {name: Gravatar, url: "https://gravatar.com/{u}.json", control: "https://gravatar.com/zzq9x7k2m4.json", weight: 3}
+- {name: AboutMe, url: "https://about.me/{u}", control: "https://about.me/zzq9x7k2m4", weight: 2}
+- {name: Linktree, url: "https://linktr.ee/{u}", control: "https://linktr.ee/zzq9x7k2m4", weight: 2}
+- {name: Medium, url: "https://medium.com/@{u}", control: "https://medium.com/@zzq9x7k2m4", weight: 1}
+- {name: SoundCloud, url: "https://soundcloud.com/{u}", control: "https://soundcloud.com/zzq9x7k2m4", weight: 1}
+- {name: Spotify, url: "https://open.spotify.com/user/{u}", control: "https://open.spotify.com/user/zzq9x7k2m4", weight: 1}
+- {name: Twitch, url: "https://www.twitch.tv/{u}", control: "https://www.twitch.tv/zzq9x7k2m4", weight: 1}
+- {name: Steam, url: "https://steamcommunity.com/id/{u}", control: "https://steamcommunity.com/id/zzq9x7k2m4", weight: 2}
+- {name: Vimeo, url: "https://vimeo.com/{u}", control: "https://vimeo.com/zzq9x7k2m4", weight: 1}
+- {name: Flickr, url: "https://www.flickr.com/people/{u}", control: "https://www.flickr.com/people/zzq9x7k2m4", weight: 1}
+- {name: Behance, url: "https://www.behance.net/{u}", control: "https://www.behance.net/zzq9x7k2m4", weight: 1}
+- {name: Dribbble, url: "https://dribbble.com/{u}", control: "https://dribbble.com/zzq9x7k2m4", weight: 1}
+- {name: Pinterest, url: "https://www.pinterest.com/{u}/", control: "https://www.pinterest.com/zzq9x7k2m4/", weight: 1}
+- {name: Etsy, url: "https://www.etsy.com/shop/{u}", control: "https://www.etsy.com/shop/zzq9x7k2m4", weight: 1}
+- {name: eBay, url: "https://www.ebay.com/usr/{u}", control: "https://www.ebay.com/usr/zzq9x7k2m4", weight: 1}
+- {name: Fiverr, url: "https://www.fiverr.com/{u}", control: "https://www.fiverr.com/zzq9x7k2m4", weight: 1}
+- {name: ProductHunt, url: "https://www.producthunt.com/@{u}", control: "https://www.producthunt.com/@zzq9x7k2m4", weight: 1}
+- {name: Strava, url: "https://www.strava.com/athletes/{u}", control: "https://www.strava.com/athletes/zzq9x7k2m4", weight: 1}
+- {name: Goodreads, url: "https://www.goodreads.com/{u}", control: "https://www.goodreads.com/zzq9x7k2m4", weight: 1}
+- {name: Letterboxd, url: "https://letterboxd.com/{u}/", control: "https://letterboxd.com/zzq9x7k2m4/", weight: 1}
+- {name: LastFM, url: "https://www.last.fm/user/{u}", control: "https://www.last.fm/user/zzq9x7k2m4", weight: 1}
+- {name: ChessCom, url: "https://api.chess.com/pub/player/{u}", control: "https://api.chess.com/pub/player/zzq9x7k2m4", api: true, weight: 1}
+- {name: Lichess, url: "https://lichess.org/api/user/{u}", control: "https://lichess.org/api/user/zzq9x7k2m4", api: true, weight: 1}
+- {name: Duolingo, url: "https://www.duolingo.com/2017-06-30/users?username={u}", control: "https://www.duolingo.com/2017-06-30/users?username=zzq9x7k2m4", api: true, weight: 1}
+- {name: NameMC, url: "https://api.mojang.com/users/profiles/minecraft/{u}", control: "https://api.mojang.com/users/profiles/minecraft/zzq9x7k2m4", api: true, weight: 1}
+- {name: Telegram, url: "https://t.me/{u}", control: "https://t.me/zzq9x7k2m4", weight: 2}
+- {name: Instagram, url: "https://www.instagram.com/{u}/", control: "https://www.instagram.com/zzq9x7k2m4/", js: true, weight: 1}
+- {name: X, url: "https://x.com/{u}", control: "https://x.com/zzq9x7k2m4", js: true, weight: 1}
+- {name: TikTok, url: "https://www.tiktok.com/@{u}", control: "https://www.tiktok.com/@zzq9x7k2m4", js: true, weight: 1}
+- {name: Facebook, url: "https://www.facebook.com/{u}", control: "https://www.facebook.com/zzq9x7k2m4", js: true, weight: 1}
