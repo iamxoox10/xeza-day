@@ -1,93 +1,191 @@
-<!doctype html><meta charset="utf-8"><title>XeZa Day</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ORAKX-CORE // VIP OSINT MATRIX</title>
 <style>
-:root{--bg:#080b14;--fg:#e6e9ef;--dim:#7b8399;--acc:#8be9a8;--warn:#ffd166;--hot:#ff6b6b}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:14px ui-monospace,SFMono-Regular,monospace;padding:24px}
-h1{color:var(--acc);font-size:18px;letter-spacing:.14em;margin:0 0 4px}
-.sub{color:var(--dim);margin-bottom:18px}
-form{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-select,input,button{background:#101626;color:var(--fg);border:1px solid #232b42;padding:9px 11px;font:inherit;border-radius:4px}
-button{background:var(--acc);color:#06130b;font-weight:700;cursor:pointer;border:0}
-button:disabled{opacity:.45;cursor:default}
-#wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-#log{background:#0c1120;border:1px solid #1b2338;padding:12px;height:52vh;overflow:auto;border-radius:4px;font-size:12px}
-#log div{padding:2px 0;border-bottom:1px solid #141b2c;color:var(--dim)}
-#log div.hit{color:var(--acc)}
-#graph{background:#0c1120;border:1px solid #1b2338;height:52vh;border-radius:4px}
-#verdict{margin:12px 0;font-size:15px}
-table{width:100%;border-collapse:collapse;margin-top:12px}
-td,th{border-bottom:1px solid #1b2338;padding:6px;text-align:left;font-size:12px}
-th{color:var(--dim);font-weight:400}
-a{color:var(--acc);text-decoration:none}
-a:hover{text-decoration:underline}
-.s3{color:var(--hot)}.s2{color:var(--warn)}.s1{color:var(--dim)}
-</style>
-<h1>XeZa Day</h1>
-<div class="sub">one identifier in — the public trail out</div>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+  :root {
+    --bg: #030508;
+    --panel: #070a14;
+    --border: #131d35;
+    --accent: #00f3ff;
+    --matrix: #00ff66;
+    --warn: #f39c12;
+    --hot: #ff2a6d;
+    --text: #c8d0e0;
+    --dim: #556080;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 20px;
+    background-image: linear-gradient(rgba(0,243,255,0.015) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0,243,255,0.015) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 18px;
+  }
+  h1 { color: var(--accent); font-size: 18px; letter-spacing: 0.18em; margin: 0; text-shadow: 0 0 10px rgba(0,243,255,0.3); }
+  .tag { color: var(--matrix); font-size: 11px; border: 1px solid var(--matrix); padding: 3px 8px; border-radius: 2px; background: rgba(0,255,102,0.05); }
+  
+  .control-panel {
+    background: var(--panel); border: 1px solid var(--border); padding: 14px; border-radius: 6px;
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  select, input, button {
+    background: #0b1120; color: var(--text); border: 1px solid var(--border);
+    padding: 10px 14px; font: inherit; border-radius: 4px; outline: none; transition: all 0.2s;
+  }
+  select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(0,243,255,0.2); }
+  input { flex: 1; min-width: 260px; }
+  button {
+    background: var(--accent); color: #030508; font-weight: 800; cursor: pointer; border: 0;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  button:hover { background: #00c4d1; box-shadow: 0 0 12px rgba(0,243,255,0.4); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-<form id="f">
+  #workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .pane { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+  .pane-header { background: #0b1120; padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; display: flex; justify-content: space-between; }
+  
+  #log { padding: 12px; height: 460px; overflow-y: auto; font-size: 12px; line-height: 1.5; }
+  #log div { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: var(--dim); }
+  #log div.hit { color: var(--matrix); text-shadow: 0 0 5px rgba(0,255,102,0.2); }
+  #log div.alert { color: var(--hot); }
+  #log div.info { color: var(--accent); }
+
+  #graph { height: 460px; background: #050810; }
+
+  .matrix-table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  th, td { border-bottom: 1px solid var(--border); padding: 10px 14px; text-align: left; font-size: 12px; }
+  th { color: var(--dim); font-weight: 400; background: #0b1120; letter-spacing: 0.05em; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; text-shadow: 0 0 5px rgba(0,243,255,0.4); }
+  
+  .score-hot { color: var(--hot); font-weight: 700; }
+  .score-warn { color: var(--warn); font-weight: 700; }
+  .score-dim { color: var(--dim); }
+
+  #status-bar { display: flex; justify-content: space-between; margin-bottom: 12px; padding: 8px 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 4px; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ORAKX-CORE // VIP OSINT MATRIX</h1>
+  <div class="tag"># Tool made by ORAKXAI T3AM</div>
+</header>
+
+<form id="f" class="control-panel">
   <select id="kind">
-    <option value="username">username</option>
-    <option value="email">email</option>
-    <option value="phone">phone</option>
-    <option value="image">image url</option>
+    <option value="username">VECTOR: USERNAME</option>
+    <option value="email">VECTOR: EMAIL</option>
+    <option value="phone">VECTOR: PHONE</option>
+    <option value="image">VECTOR: IMAGE URL</option>
+    <option value="domain">VECTOR: DOMAIN/IP</option>
+    <option value="crypto">VECTOR: CRYPTO WALLET</option>
   </select>
-  <input id="q" placeholder="value" size="34" required>
+  <input id="q" placeholder="Enter target identifier (e.g. target_handle, 0x..., +1...)" required>
   <select id="depth">
-    <option value="2">depth 2</option>
-    <option value="1">depth 1</option>
-    <option value="0">no pivot</option>
+    <option value="2">RECON DEPTH: 2 (DEEP)</option>
+    <option value="1">RECON DEPTH: 1 (FAST)</option>
+    <option value="0">RECON DEPTH: 0 (SURFACE)</option>
   </select>
-  <button id="go">trace</option>
+  <button id="go">Initialize Scan</button>
 </form>
 
-<div id="verdict"></div>
-<div id="wrap"><div id="log"></div><div id="graph"></div></div>
-<table><thead><tr><th>kind</th><th>value</th><th>method</th><th>score</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+<div id="status-bar">
+  <div>SYSTEM STATUS: <span id="sys-state" style="color:var(--matrix)">STANDBY</span></div>
+  <div id="verdict-box">VERDICT: PENDING TARGET</div>
+</div>
+
+<div id="workspace">
+  <div class="pane">
+    <div class="pane-header"><span>Live Telemetry & Recon Stream</span><span id="log-count">0 events</span></div>
+    <div id="log"></div>
+  </div>
+  <div class="pane">
+    <div class="pane-header"><span>Neural Asset Mapping & Graph</span><span>Interactive Matrix</span></div>
+    <div id="graph"></div>
+  </div>
+</div>
+
+<table class="matrix-table">
+  <thead>
+    <tr><th>Vector Type</th><th>Discovered Intelligence Value</th><th>Protocol / Method</th><th>Threat / Weight Score</th><th>Direct Access Link</th></tr>
+  </thead>
+  <tbody id="rows"></tbody>
+</table>
 
 <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 <script>
-const f=document.getElementById('f'),go=document.getElementById('go'),log=document.getElementById('log');
-const rows=document.getElementById('rows'),verdict=document.getElementById('verdict');
-let net=null,nodes=null,edges=null;
+const f = document.getElementById('f'), go = document.getElementById('go'), log = document.getElementById('log');
+const rows = document.getElementById('rows'), verdictBox = document.getElementById('verdict-box'), sysState = document.getElementById('sys-state');
+let net = null, nodes = null, edges = null, logCount = 0;
 
-function boot(q){
-  document.getElementById('graph').innerHTML='';
-  nodes=new vis.DataSet([{id:'root',label:q,color:'#8be9a8',font:{color:'#06130b'}}]);
-  edges=new vis.DataSet([]);
-  net=new vis.Network(document.getElementById('graph'),{nodes,edges},{
-    nodes:{shape:'dot',size:9,color:'#4b5b7c',font:{color:'#c8d0e0',size:11}},
-    edges:{color:'#2a3550',smooth:false},
-    physics:{stabilization:true,barnesHut:{springLength:130}},
-    interaction:{hover:true}});
-  rows.innerHTML='';verdict.textContent='';log.innerHTML='';
+function boot(q) {
+  document.getElementById('graph').innerHTML = '';
+  nodes = new vis.DataSet([{id: 'root', label: 'TARGET: ' + q, color: '#00f3ff', font: {color: '#030508', face: 'JetBrains Mono', bold: true}}]);
+  edges = new vis.DataSet([]);
+  net = new vis.Network(document.getElementById('graph'), {nodes, edges}, {
+    nodes: { shape: 'dot', size: 10, color: '#131d35', font: {color: '#c8d0e0', face: 'JetBrains Mono', size: 11}, borderWidth: 2, borderDrawn: true },
+    edges: { color: {color: '#131d35', highlight: '#00f3ff'}, smooth: {type: 'cubicBezier'} },
+    physics: { stabilization: true, barnesHut: { springLength: 150, gravitationalConstant: -2000 } },
+    interaction: { hover: true }
+  });
+  rows.innerHTML = ''; verdictBox.textContent = 'VERDICT: SCANNING IN PROGRESS...'; log.innerHTML = '';
+  sysState.textContent = 'ACTIVE // SCANNING'; sysState.style.color = 'var(--accent)';
+  logCount = 0; document.getElementById('log-count').textContent = '0 events';
 }
 
-f.addEventListener('submit',async e=>{
-  e.preventDefault();go.disabled=true;
-  const kind=document.getElementById('kind').value,q=document.getElementById('q').value.trim();
+f.addEventListener('submit', async e => {
+  e.preventDefault(); go.disabled = true;
+  const kind = document.getElementById('kind').value, q = document.getElementById('q').value.trim();
   boot(q);
-  const r=await fetch(`/api/trace?kind=${kind}&q=${encodeURIComponent(q)}&depth=${document.getElementById('depth').value}`,{method:'POST'});
-  const {job}=await r.json();
-  const es=new EventSource(`/api/stream/${job}`);
-  es.addEventListener('log',ev=>{
-    const d=document.createElement('div');
-    d.textContent=ev.data; if(ev.data.startsWith('+')||ev.data.includes('hit'))d.className='hit';
-    log.appendChild(d);log.scrollTop=log.scrollHeight;
-  });
-  es.addEventListener('edge',ev=>{
-    const e=JSON.parse(ev.data),id=job+e.value;
-    nodes.add({id,label:String(e.value).slice(0,26),color:e.score>=5?'#ff6b6b':e.score>=3?'#ffd166':'#4b5b7c'});
-    edges.add({from:'root',to:id,label:e.kind});
-    const tr=document.createElement('tr');
-    const cls=e.score>=5?'s3':e.score>=3?'s2':'s1';
-    tr.innerHTML=`<td>${e.kind}</td><td>${e.url?`<a href="${e.url}" target="_blank" rel="noopener">${e.value}</a>`:e.value}</td><td>${e.method}</td><td class="${cls}">${e.score}</td><td></td>`;
-    rows.appendChild(tr);
-  });
-  es.addEventListener('done',ev=>{
-    const d=JSON.parse(ev.data);
-    verdict.textContent=`verdict: ${d.verdict||'?'} · ${d.edges.length} pivots`;
-    es.close();go.disabled=false;
-  });
+  
+  try {
+    const r = await fetch(`/api/trace?kind=${kind}&q=${encodeURIComponent(q)}&depth=${document.getElementById('depth').value}`, {method: 'POST'});
+    const {job} = await r.json();
+    const es = new EventSource(`/api/stream/${job}`);
+    
+    es.addEventListener('log', ev => {
+      const d = document.createElement('div');
+      d.textContent = '> ' + ev.data;
+      if (ev.data.startsWith('+') || ev.data.includes('hit')) d.className = 'hit';
+      else if (ev.data.includes('error') || ev.data.includes('alert')) d.className = 'alert';
+      else if (ev.data.includes('profiling') || ev.data.includes('enumerating')) d.className = 'info';
+      log.appendChild(d); log.scrollTop = log.scrollHeight;
+      logCount++; document.getElementById('log-count').textContent = logCount + ' events';
+    });
+    
+    es.addEventListener('edge', ev => {
+      const e = JSON.parse(ev.data), id = job + e.value + Math.random();
+      nodes.add({ id, label: String(e.value).slice(0, 30), color: e.score >= 5 ? '#ff2a6d' : e.score >= 3 ? '#f39c12' : '#00ff66' });
+      edges.add({ from: 'root', to: id, label: e.kind });
+      
+      const tr = document.createElement('tr');
+      const cls = e.score >= 5 ? 'score-hot' : e.score >= 3 ? 'score-warn' : 'score-dim';
+      tr.innerHTML = `<td>${e.kind}</td><td>${e.value}</td><td>${e.method}</td><td class="${cls}">${e.score}</td><td>${e.url ? `<a href="${e.url}" target="_blank" rel="noopener">ACCESS_NODE ↗</a>` : 'INTERNAL_DATA'}</td>`;
+      rows.appendChild(tr);
+    });
+    
+    es.addEventListener('done', ev => {
+      const d = JSON.parse(ev.data);
+      verdictBox.innerHTML = `VERDICT: <span style="color:var(--accent)">${(d.verdict || 'UNKNOWN').toUpperCase()}</span> · TOTAL INTEL NODES: ${d.edges.length}`;
+      sysState.textContent = 'COMPLETED'; sysState.style.color = 'var(--matrix)';
+      es.close(); go.disabled = false;
+    });
+  } catch (err) {
+    const d = document.createElement('div');
+    d.className = 'alert'; d.textContent = '> CRITICAL ERROR: Connection to scanning daemon failed.';
+    log.appendChild(d);
+    go.disabled = false; sysState.textContent = 'FAILED'; sysState.style.color = 'var(--hot)';
+  }
 });
 </script>
+</body>
+</html>
